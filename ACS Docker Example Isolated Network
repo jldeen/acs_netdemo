@@ -1,0 +1,26 @@
+export ROOT_PASSWORD=<rootPassword>
+export WORDPRESS_PASSWORD=<wordpressPassword>
+
+docker network create --driver bridge jdnw
+docker network inspect jdnw
+docker network ls
+
+docker run --detach \
+  --name mysql \
+  --network=jdnw \
+  --env MYSQL_ROOT_PASSWORD=$ROOT_PASSWORD \
+  --env MYSQL_USER=wordpress \
+  --env MYSQL_PASSWORD=$WORDPRESS_PASSWORD \
+  --env MYSQL_DATABASE=wordpress \
+  mysql
+
+  docker run --detach \
+  --publish 80:80 \
+  --name wordpress \
+  --network=jdnw \
+  --env WORDPRESS_DB_HOST=mysql:3306 \
+  --env WORDPRESS_DB_USER=wordpress \
+  --env WORDPRESS_DB_PASSWORD=$WORDPRESS_PASSWORD \
+  wordpress
+
+  docker exec -it wordpress ping <ip-address-of-mysql-container> [Note: docker exec only works on running containers]

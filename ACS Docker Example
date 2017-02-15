@@ -1,0 +1,23 @@
+If you want to communicate with container names in this default bridge network, you must connect the containers via the legacy docker run --link option.
+
+The default docker0 bridge network supports the use of port mapping and docker run --link to allow communications between containers in the docker0 network. These techniques are cumbersome to set up and prone to error. While they are still available to you as techniques, it is better to avoid them and define your own bridge networks instead.
+
+export ROOT_PASSWORD=<rootPassword>
+export WORDPRESS_PASSWORD=<wordpressPassword>
+
+
+docker run --detach \
+  --name mysql \
+  --env MYSQL_ROOT_PASSWORD=$ROOT_PASSWORD \
+  --env MYSQL_USER=wordpress \
+  --env MYSQL_PASSWORD=$WORDPRESS_PASSWORD \
+  --env MYSQL_DATABASE=wordpress \
+  mysql
+
+  docker run --detach \
+  --publish 80:80 \
+  --name wordpress \
+  --link mysql:mysql \
+  --env WORDPRESS_DB_USER=wordpress \
+  --env WORDPRESS_DB_PASSWORD=$WORDPRESS_PASSWORD \
+  wordpress
